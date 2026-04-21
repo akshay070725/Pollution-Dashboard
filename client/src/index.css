@@ -231,8 +231,131 @@ a {
   color: var(--muted);
 }
 
+.search-form {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 280px;
+  background: var(--panel-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+
+.search-input::placeholder {
+  color: var(--muted);
+}
+
+.ranking-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.ranking-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel-soft);
+}
+
+.ranking-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.rank-index {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.severity-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.aqi-bar-bg {
+  height: 10px;
+  border-radius: 999px;
+  background: #0c1118;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.aqi-bar {
+  height: 100%;
+}
+
+.severity-severe {
+  background: rgba(152, 0, 67, 0.2);
+  color: #ff9ac6;
+  border-color: rgba(152, 0, 67, 0.45);
+}
+
+.severity-very-poor {
+  background: rgba(255, 107, 107, 0.2);
+  color: #ffb0b0;
+  border-color: rgba(255, 107, 107, 0.45);
+}
+
+.severity-poor {
+  background: rgba(240, 180, 41, 0.2);
+  color: #ffd784;
+  border-color: rgba(240, 180, 41, 0.45);
+}
+
+.severity-moderate {
+  background: rgba(61, 214, 198, 0.2);
+  color: #97efe5;
+  border-color: rgba(61, 214, 198, 0.45);
+}
+
+.severity-satisfactory {
+  background: rgba(128, 195, 66, 0.2);
+  color: #bde694;
+  border-color: rgba(128, 195, 66, 0.45);
+}
+
+.suggestion-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.suggestion-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--panel-soft);
+}
+
+.suggestion-card h3 {
+  margin: 0 0 8px;
+}
+
 @media (max-width: 640px) {
   .app-header h1 {
     font-size: 1.5rem;
+  }
+
+  .search-input {
+    min-width: 100%;
   }
 }
