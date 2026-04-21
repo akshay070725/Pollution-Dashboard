@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+
+function getApiUrl(pathWithQuery) {
+  if (!API_BASE) return pathWithQuery;
+  return `${API_BASE}${pathWithQuery.startsWith("/") ? "" : "/"}${pathWithQuery}`;
+}
+
 export default function useDashboardData(preset) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState(null);
@@ -14,7 +21,7 @@ export default function useDashboardData(preset) {
         lon: String(preset.lon),
         city: preset.city,
       });
-      const res = await fetch(`/api/dashboard?${q}`);
+      const res = await fetch(getApiUrl(`/api/dashboard?${q}`));
       const raw = await res.text();
       let json;
       try {
@@ -22,7 +29,9 @@ export default function useDashboardData(preset) {
       } catch {
         const hint =
           raw.includes("Cannot GET") || raw.includes("<!DOCTYPE")
-            ? " You may be on the wrong URL: run the UI with `npm run dev` inside `client` and open http://localhost:5173 (not the API port)."
+            ? API_BASE
+              ? ` API base is set to ${API_BASE}. Verify this URL serves /api/dashboard.`
+              : " You may be on the wrong URL: run the UI with `npm run dev` inside `client` and open http://localhost:5173 (not the API port)."
             : "";
         throw new Error(`Not JSON from server (${res.status}).${hint}`);
       }
@@ -31,7 +40,9 @@ export default function useDashboardData(preset) {
     } catch (error) {
       if (String(error.message || error).includes("Failed to fetch")) {
         setErr(
-          "Cannot reach the API. Start the server: `npm run dev:api` from the project root, and use the Vite app at http://localhost:5173 (not file://).",
+          API_BASE
+            ? `Cannot reach API at ${API_BASE}. Check backend deployment and CORS, then retry.`
+            : "Cannot reach the API. Start the server: `npm run dev:api` from the project root, and use the Vite app at http://localhost:5173 (not file://).",
         );
       } else {
         setErr(String(error.message || error));
