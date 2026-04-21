@@ -1,0 +1,9 @@
+{
+  "name": "pollution-dashboard",
+  "private": true,
+  "scripts": {
+    "dev:api": "npm run dev --prefix server",
+    "dev:web": "npm run dev --prefix client",
+    "dev:ml": "cd ml && ./.venv/bin/uvicorn app:app --reload --host 127.0.0.1 --port ${PORT_ML:-5050}"
+  }
+}
