@@ -38,7 +38,6 @@ services:
   - type: web
     name: pollution-dashboard-web
     runtime: static
-    plan: free
     rootDir: client
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
