@@ -4,6 +4,10 @@
   "scripts": {
     "dev:api": "npm run dev --prefix server",
     "dev:web": "npm run dev --prefix client",
-    "dev:ml": "cd ml && ./.venv/bin/uvicorn app:app --reload --host 127.0.0.1 --port ${PORT_ML:-5050}"
+    "dev:ml": "cd ml && ./.venv/bin/uvicorn app:app --reload --host 127.0.0.1 --port ${PORT_ML:-5050}",
+    "dev": "concurrently -n API,WEB,ML -c cyan,magenta,green \"npm run dev:api\" \"npm run dev:web\" \"npm run dev:ml\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

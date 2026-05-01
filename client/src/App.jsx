@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useParams } from "react-router-dom";
 import DashboardView from "./components/DashboardView";
 import { getCityById, PRESETS } from "./data/cities";
 import { getSeverity, MONTHLY_RANKING, WEEKLY_RANKING } from "./data/pollutionRankings";
 import useDashboardData from "./hooks/useDashboardData";
+
+const RECENT_KEY = "pollution-dashboard-recent-locations";
 
 function MainLayout({ children }) {
   return (
@@ -146,7 +148,24 @@ function ExplorePage() {
   const [searching, setSearching] = useState(false);
   const [locating, setLocating] = useState(false);
   const [preset, setPreset] = useState(PRESETS[0]);
+  const [recentLocations, setRecentLocations] = useState(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
   const dashboard = useDashboardData(preset);
+
+  function saveRecent(nextPreset) {
+    const next = [
+      nextPreset,
+      ...recentLocations.filter((p) => p.city !== nextPreset.city).slice(0, 4),
+    ].slice(0, 5);
+    setRecentLocations(next);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  }
 
   async function handleSearch(e) {
     e.preventDefault();
@@ -156,6 +175,7 @@ function ExplorePage() {
     try {
       const place = await searchPlace(query.trim());
       setPreset(place);
+      saveRecent(place);
     } catch (error) {
       setLocationErr(String(error.message || error));
     } finally {
@@ -203,6 +223,13 @@ function ExplorePage() {
             lat: approx.lat,
             lon: approx.lon,
           });
+          saveRecent({
+            id: "custom-ip",
+            name: `${approx.city} (Approx.)`,
+            city: approx.city,
+            lat: approx.lat,
+            lon: approx.lon,
+          });
           return;
         }
       }
@@ -218,16 +245,25 @@ function ExplorePage() {
         lat,
         lon,
       });
+      saveRecent({
+        id: "custom-current",
+        name: "Current Location",
+        city: "Current Location",
+        lat,
+        lon,
+      });
 
       try {
         const city = await reverseGeocode(lat, lon);
-        setPreset({
+        const resolved = {
           id: "custom-current",
           name: city,
           city,
           lat,
           lon,
-        });
+        };
+        setPreset(resolved);
+        saveRecent(resolved);
       } catch {
         // Keep coordinate-based data; reverse geocode is optional.
       }
@@ -237,6 +273,13 @@ function ExplorePage() {
       setLocating(false);
     }
   }
+
+  useEffect(() => {
+    if (recentLocations.length > 0) return;
+    handleUseCurrentLocation();
+    // Intentionally run once for first-time UX.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <MainLayout>
@@ -266,6 +309,38 @@ function ExplorePage() {
             {locating ? "Locating..." : "Use my location"}
           </button>
         </form>
+        <div className="quick-city-row">
+          {PRESETS.slice(0, 8).map((city) => (
+            <button
+              key={city.id}
+              type="button"
+              className="chip-button"
+              onClick={() => {
+                setPreset(city);
+                saveRecent(city);
+              }}
+            >
+              {city.name}
+            </button>
+          ))}
+        </div>
+        {recentLocations.length > 0 && (
+          <div className="recent-row">
+            <p className="muted">Recent locations</p>
+            <div className="quick-city-row">
+              {recentLocations.map((city) => (
+                <button
+                  key={`${city.city}-${city.lat}-${city.lon}`}
+                  type="button"
+                  className="chip-button chip-button-recent"
+                  onClick={() => setPreset(city)}
+                >
+                  {city.city}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         {locationErr && <div className="alert-error">{locationErr}</div>}
       </section>
       <DashboardView preset={preset} {...dashboard} />

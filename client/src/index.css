@@ -19,9 +19,29 @@
 body {
   margin: 0;
   font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: radial-gradient(1200px 600px at 20% -10%, #1a2a38 0%, var(--bg) 55%);
+  background: radial-gradient(1200px 600px at 20% -10%, var(--app-sky, #1a2a38) 0%, var(--bg) 55%);
   color: var(--text);
   min-height: 100vh;
+}
+
+body[data-aqi="good"] {
+  --app-sky: #164b34;
+}
+
+body[data-aqi="moderate"] {
+  --app-sky: #0f3f49;
+}
+
+body[data-aqi="poor"] {
+  --app-sky: #4a3a12;
+}
+
+body[data-aqi="very-poor"] {
+  --app-sky: #4a1b1b;
+}
+
+body[data-aqi="severe"] {
+  --app-sky: #3b0a21;
 }
 
 a {
@@ -126,6 +146,15 @@ a {
   background: rgba(255, 107, 107, 0.08);
 }
 
+.alert-warning {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--warn);
+  background: rgba(240, 180, 41, 0.12);
+  color: #ffd784;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -152,6 +181,166 @@ a {
 
 .button-secondary {
   background: var(--panel-soft);
+}
+
+.hero-card {
+  overflow: hidden;
+}
+
+.hero-card.aqi-good,
+.hour-card.aqi-good {
+  background: linear-gradient(130deg, rgba(88, 220, 145, 0.24), rgba(88, 220, 145, 0.08)), var(--panel);
+}
+
+.hero-card.aqi-moderate,
+.hour-card.aqi-moderate {
+  background: linear-gradient(130deg, rgba(61, 214, 198, 0.22), rgba(61, 214, 198, 0.08)), var(--panel);
+}
+
+.hero-card.aqi-poor,
+.hour-card.aqi-poor {
+  background: linear-gradient(130deg, rgba(240, 180, 41, 0.24), rgba(240, 180, 41, 0.08)), var(--panel);
+}
+
+.hero-card.aqi-very-poor,
+.hour-card.aqi-very-poor {
+  background: linear-gradient(130deg, rgba(255, 107, 107, 0.24), rgba(255, 107, 107, 0.08)), var(--panel);
+}
+
+.hero-card.aqi-severe,
+.hour-card.aqi-severe {
+  background: linear-gradient(130deg, rgba(152, 0, 67, 0.28), rgba(152, 0, 67, 0.1)), var(--panel);
+}
+
+.hero-kicker {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-city {
+  margin-bottom: 4px;
+}
+
+.hero-aqi {
+  font-size: 3.4rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.hero-status {
+  margin-top: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.hero-summary {
+  color: var(--text);
+  opacity: 0.9;
+  margin: 10px 0 0;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.metric-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.metric-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.hourly-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(120px, 1fr);
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.hour-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.hour-card p,
+.hour-card span,
+.hour-card small {
+  margin: 0;
+  display: block;
+}
+
+.hour-card p,
+.hour-card small {
+  color: var(--muted);
+}
+
+.hour-card strong {
+  font-size: 1.45rem;
+}
+
+.daily-list {
+  display: grid;
+  gap: 10px;
+}
+
+.daily-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.daily-item p {
+  margin: 4px 0 0;
+}
+
+.daily-metrics {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+}
+
+.health-cards {
+  display: grid;
+  gap: 10px;
+}
+
+.health-action-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--panel-soft);
+}
+
+.health-action-card h4 {
+  margin: 0 0 6px;
+}
+
+.health-action-card p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .aqi-label {
@@ -236,6 +425,35 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.quick-city-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chip-button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel-soft);
+  color: var(--text);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.chip-button-recent {
+  border-color: rgba(61, 214, 198, 0.5);
+}
+
+.recent-row {
+  margin-top: 10px;
+}
+
+.recent-row p {
+  margin: 0;
 }
 
 .search-input {
@@ -357,5 +575,9 @@ a {
 
   .search-input {
     min-width: 100%;
+  }
+
+  .hero-aqi {
+    font-size: 2.6rem;
   }
 }
