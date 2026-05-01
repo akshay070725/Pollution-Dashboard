@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import numpy as np
+from math import fsum
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -21,15 +21,27 @@ class PredictBody(BaseModel):
 
 
 def _predict_linear(values: list[float], hours_ahead: int) -> list[float]:
-    y = np.asarray(values, dtype=float)
-    if y.size < 2:
-        v = float(y[0]) if y.size else 0.0
+    y = [float(v) for v in values]
+    n = len(y)
+    if n < 2:
+        v = float(y[0]) if n else 0.0
         return [max(0.0, v)] * hours_ahead
-    x = np.arange(y.size, dtype=float)
-    slope, intercept = np.polyfit(x, y, 1)
-    future_x = np.arange(y.size, y.size + hours_ahead, dtype=float)
-    pred = slope * future_x + intercept
-    return np.maximum(pred, 0.0).tolist()
+
+    # Ordinary least squares for y = a*x + b
+    # x = 0..n-1
+    sum_x = (n - 1) * n / 2
+    sum_x2 = (n - 1) * n * (2 * n - 1) / 6
+    sum_y = fsum(y)
+    sum_xy = fsum(i * y[i] for i in range(n))
+    denom = n * sum_x2 - sum_x * sum_x
+    slope = (n * sum_xy - sum_x * sum_y) / denom if denom else 0.0
+    intercept = (sum_y - slope * sum_x) / n
+
+    out: list[float] = []
+    for i in range(1, hours_ahead + 1):
+        x = (n - 1) + i
+        out.append(max(0.0, slope * x + intercept))
+    return out
 
 
 @app.post("/predict")
@@ -39,7 +51,7 @@ def predict(body: PredictBody):
         "hours_ahead": body.hours_ahead,
         "input_points": len(body.values),
         "forecast": pred,
-        "method": "linear_trend_numpy",
+        "method": "linear_trend_pure_python",
         "label": body.label,
     }
 
