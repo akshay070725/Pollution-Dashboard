@@ -35,8 +35,9 @@ services:
         value: "1"
 
   # 3) Frontend (static site)
-  - type: static_site
+  - type: web
     name: pollution-dashboard-web
+    runtime: static
     plan: free
     rootDir: client
     buildCommand: npm ci && npm run build
